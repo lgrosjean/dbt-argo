@@ -1,0 +1,5 @@
+kind: CronWorkflow
+metadata:
+  name: analytics-adhoc-myservier
+spec:
+  schedule: 1 * * * *
