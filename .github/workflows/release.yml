@@ -1,9 +1,8 @@
 name: Create Release and Publish to PyPI
 
 on:
-  push:
-    tags:
-      - "*"
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -33,6 +32,6 @@ jobs:
 
       - name: Build and Publish
         run: |
-          poetry config pypi-token.pypi ${{ secrets.TEST_PYPI_API_TOKEN }}
+          poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
           poetry publish --build
         shell: bash
