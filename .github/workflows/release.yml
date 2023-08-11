@@ -4,6 +4,7 @@ on:
   release:
     types:
         - released
+        - prereleased
 
 jobs:
   build:
@@ -26,6 +27,15 @@ jobs:
           sed -i -r 's/__version__ *= *".*"/__version__ = "${{ github.event.release.tag_name }}"/g' src/dbt_argo/__init__.py
           sed -i '0,/version =.*/s//version = "'"${{ github.event.release.tag_name }}"'"/' ./pyproject.toml
 
+      - name: Add and Commit Version
+        shell: bash
+        run: |
+          git add src ./pyproject.toml
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git commit -m "Change version to ${{ github.event.release.tag_name }}" --allow-empty
+          git push origin HEAD:main
+        
       - name: Install package
         shell: bash
         run: |
