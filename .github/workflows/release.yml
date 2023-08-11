@@ -1,0 +1,34 @@
+name: Create Release and Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+
+      - name: Set Package Version
+        shell: bash
+        run: |
+          sed -i -r 's/__version__ *= *".*"/__version__ = "${{ github.event.release.tag_name }}"/g' src/dbt_argo/__init__.py
+          sed -i '0,/version =.*/s//version = "'"${{ github.event.release.tag_name }}"'"/' ./pyproject.toml
+
+      - name: Install package
+        shell: bash
+        run: |
+          poetry install --no-root
+
+      - name: Build and Publish
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.TEST_PYPI_API_TOKEN }}
+          poetry publish --build
+        shell: bash
