@@ -1,15 +1,11 @@
 name: CI
 
-# Controls when the workflow will run
 on:
   push:
     branches:
       - main
   pull_request:
 
-  # Allows you to run this workflow manually from the Actions tab
-  # workflow_dispatch:
-  
 jobs:
   ci:
     strategy:
@@ -21,10 +17,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: psf/black@stable
         with:
-          python-version: ${{ matrix.python-version }}
-      - run: |
-          pip install poetry==${{ matrix.poetry-version }}
-      - name: View poetry --help
-        run: poetry --help
+          src: "src"
+      # - uses: actions/setup-python@v2
+      #   with:
+      #     python-version: ${{ matrix.python-version }}
+      # - run: |
+      #     pip install poetry==${{ matrix.poetry-version }}
+      # - name: View poetry --help
+      #   run: poetry --help
