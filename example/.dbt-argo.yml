@@ -1,0 +1,5 @@
+kind: CronWorkflow
+metadata:
+  name: jaffle-shop
+spec:
+  schedule: 1 * * * *

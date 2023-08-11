@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "dbt-argo"
+version = "0.1.0"
+description = "A dbt pipeline converter to Argo Workflows"
+authors = ["Léo Grosjean <leo.grosjean@live.fr>"]
+readme = "README.md"
+packages = [{ include = "dbt_argo", from = "src" }]
+
+[tool.poetry.scripts]
+dbt-argo = "dbt_argo.cli:cli"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+PyYAML = "^6.0.1"
+pydantic = "^2.1.1"
+click = "^8.1.6"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+pylint = "^2.17.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
