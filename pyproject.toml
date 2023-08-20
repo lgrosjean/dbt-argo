@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "dbt-argo"
-version = "0.1.0"
+version = "0.1.0-rc"
 description = "A dbt pipeline converter to Argo Workflows"
-authors = ["Léo Grosjean <leo.grosjean@live.fr>"]
+authors = ["Léo Grosjean <leo.bigjin@gmail.com>"]
 readme = "README.md"
 packages = [{ include = "dbt_argo", from = "src" }]
 
