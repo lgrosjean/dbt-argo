@@ -42,6 +42,8 @@ class DbtBaseTemplate(Template):
 
 
 class DbtDAGTask(DAGTask):
+    """A single dbt node execution"""
+
     def __init__(self, node: DbtNode, dependencies: List[str], base_name="dbt-base"):
         super().__init__(
             name=node.name,
@@ -57,6 +59,9 @@ class DbtDAGTask(DAGTask):
 
 
 class DbtRunTemplate(Template):
+    """An Argo template defining the DAG of tasks and dependencies based on
+    the dbt manifest given in args"""
+
     def __init__(self, manifest: DbtManifest, name="run", base_name="dbt-base"):
         tasks = []
         for node in manifest.nodes.values():
