@@ -17,3 +17,7 @@ dbt-argo [PATH] \
 ## `.dbt-argo.yml` configuration file
 
 This file is a simplify Argo Workflow spec file. It only contains root configuration options and any reference to templates, steps or containers.
+
+## TODO
+
+- Créer un CLI qui permet de générer sans fichier de config (dbt-argo cronworkflow . --schedule ... --name ...--service_account ...)
