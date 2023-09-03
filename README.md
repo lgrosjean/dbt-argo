@@ -40,3 +40,4 @@ Commands:
 - [dbt > 1.5](https://docs.getdbt.com/reference/programmatic-invocations) for easy manifest parsing directly in python scripts
 - [Argo CLI](https://argoproj.github.io/argo-workflows/walk-through/argo-cli/) for cli options
 - [kubectl](https://argoproj.github.io/argo-workflows/kubectl/) for create functiin definition
+- [Cloudpathlib]([cloudpathlib](https://github.com/drivendataorg/cloudpathlib)) to deal with cloud file like `pathlib`
