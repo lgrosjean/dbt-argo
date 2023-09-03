@@ -11,7 +11,7 @@ Simplify CI steps to create Argo workflow for dbt projects.
 
 ## Limitations
 
-- This version only support Google Cloud Storage as backend to store `manifest.json` and `dbt models` files to be executed.
+- This version only support Google Cloud Storage as backend to store **dbt artifacts** to be used by Argo as artifacts.
 - This version only support `CronWorkflow` and `Workflow` generation
 
 ## Usage
@@ -27,6 +27,7 @@ Options:
   --help  Show this message and exit.
 
 Commands:
+  cp      copy local folder to GCS Bucket
   create  Create a dbt Argo Workflow
   cron    Manage cron workflow
   submit  dbt-argo deploy {FILE

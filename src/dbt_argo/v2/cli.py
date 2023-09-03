@@ -9,7 +9,10 @@ from couler.argo_submitter import ArgoSubmitter  # pylint: disable=import-error
 from dbt.cli.main import dbtRunner, dbtRunnerResult
 from dbt.contracts.graph.manifest import Manifest
 
-from .workflows import create_dbt_workflow
+from .utils import copy_dir_to_gcs
+from .workflows import create_dbt_cronworkflow, create_dbt_workflow
+
+# TODO: find a way not to repeat click.options
 
 
 @click.group(invoke_without_command=True)
@@ -21,7 +24,7 @@ def cli():
 
 
 @cli.command(name="create")
-# Some for cron
+# Same for cron
 @click.option("--name", default="analytics-adhoc", show_default=True)
 @click.option("--gcs-bucket", envvar="GCS_BUCKET", required=True, show_default=True)
 @click.option("--namespace", envvar="K8S_NAMESPACE", show_default=True)
@@ -74,18 +77,69 @@ def create_workflow(
 def cron():
     """Manage cron workflow"""
     ctx = click.get_current_context()
-    click.echo(ctx.get_help())
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
 
 
 @cron.command(name="create")
-@click.option("--schedule", default="1 * * * *", show_default=True)
+# Workfloc command
+@click.option("--name", default="analytics-adhoc", show_default=True)
+@click.option("--gcs-bucket", envvar="GCS_BUCKET", required=True, show_default=True)
+@click.option("--namespace", envvar="K8S_NAMESPACE", show_default=True)
+@click.option("--service-account-name", envvar="K8S_SA", show_default=True)
+@click.option("--env", envvar="ENV", show_default=True)
+@click.option("--gcp_project_id", envvar="GCP_PROJECT_ID", show_default=True)
+# Cron specific
+@click.option("--schedule", default="0 4 * * *", show_default=True)
 @click.option("--timezone", default="Europe/Paris", show_default=True)
 @click.option("--suspend", default=False, show_default=True)
+# submit
+@click.option("--submit", is_flag=True)
+@click.option("--echo", is_flag=True)
 @click.argument("command", type=click.Choice(["build", "run"]))
-def create_cron(schedule, timezone, suspend, command):
+def create_cron(
+    name: str,
+    gcs_bucket: str,
+    namespace: str,
+    service_account_name: str,
+    env: str,
+    gcp_project_id: str,
+    schedule: str,
+    timezone: str,
+    suspend: bool,
+    submit,
+    echo,
+    command: str,
+):
     """Create a dbt Argo CronWorkflow"""
-    click.echo("Building cronworkflow")
-    click.echo(f"Command: {command}")
+
+    # https://docs.getdbt.com/reference/programmatic-invocations#reusing-objects
+    res: dbtRunnerResult = dbtRunner().invoke(["parse"])
+    if isinstance(res.result, Manifest):
+        manifest = res.result
+
+        workflow = create_dbt_cronworkflow(
+            manifest,
+            schedule=schedule,
+            name=name,
+            command=command,
+            service_account_name=service_account_name,
+            namespace=namespace,
+            gcs_bucket=gcs_bucket,
+            env=env,
+            gcp_project_id=gcp_project_id,
+            timezone=timezone,
+            suspend=suspend,
+        )
+
+        filepath = workflow.to_file(name=name)
+
+        if echo:
+            click.echo()
+            click.echo(workflow.to_yaml())
+
+        if submit:
+            submit_workflow(filepath, dry_run=False)
 
 
 @cli.command(name="submit")
@@ -96,9 +150,19 @@ def submit_workflow(filename, dry_run):
     click.echo(f" Deploying {filename}!")
 
     submitter = ArgoSubmitter(namespace="omni-leogrosjean")
+
     with open(filename, encoding="utf8") as file:
         workflow_yaml = yaml.safe_load(file)
+
     if dry_run:
         sys.exit("Dry run mode...")
-    # submitter.submit(workflow_yaml)
-    print("hello")
+
+    submitter.submit(workflow_yaml)
+
+
+@cli.command(name="cp")
+@click.argument("folder", default=".", required=True, type=str)
+@click.argument("gcs_path", required=True, type=str)
+def cp(folder, gcs_path):
+    """copy local folder to GCS Bucket"""
+    copy_dir_to_gcs(folder, gcs_path)

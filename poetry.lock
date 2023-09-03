@@ -324,6 +324,28 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "cloudpathlib"
+version = "0.15.1"
+description = "pathlib-style classes for cloud storage services."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "cloudpathlib-0.15.1-py3-none-any.whl", hash = "sha256:fee8a31848ede95f4783ef84fe1e3ce7f85dd21b476fc0898d8b836335e41a99"},
+    {file = "cloudpathlib-0.15.1.tar.gz", hash = "sha256:60e50a396cbc7b507859b3502b40f966cc9a37a5be6647e3ae9772cc5a9599f2"},
+]
+
+[package.dependencies]
+google-cloud-storage = {version = "*", optional = true, markers = "extra == \"gs\""}
+typing_extensions = {version = ">4", markers = "python_version < \"3.11\""}
+
+[package.extras]
+all = ["cloudpathlib[azure]", "cloudpathlib[gs]", "cloudpathlib[s3]"]
+azure = ["azure-storage-blob (>=12)"]
+gs = ["google-cloud-storage"]
+s3 = ["boto3"]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -361,6 +383,21 @@ type = "git"
 url = "https://github.com/couler-proj/couler"
 reference = "HEAD"
 resolved_reference = "4203fa0eb7d01caa9b59c5e0087ffcf1ad4524ac"
+
+[[package]]
+name = "croniter"
+version = "1.4.1"
+description = "croniter provides iteration for datetime object with cron like format"
+category = "main"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+files = [
+    {file = "croniter-1.4.1-py2.py3-none-any.whl", hash = "sha256:9595da48af37ea06ec3a9f899738f1b2c1c13da3c38cea606ef7cd03ea421128"},
+    {file = "croniter-1.4.1.tar.gz", hash = "sha256:1a6df60eacec3b7a0aa52a8f2ef251ae3dd2a7c7c8b9874e73e791636d55a361"},
+]
+
+[package.dependencies]
+python-dateutil = "*"
 
 [[package]]
 name = "dbt-bigquery"
@@ -1518,14 +1555,14 @@ files = [
 
 [[package]]
 name = "pyaml"
-version = "23.7.0"
+version = "23.9.1"
 description = "PyYAML-based module to produce a bit more pretty and readable YAML-serialized data"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pyaml-23.7.0-py3-none-any.whl", hash = "sha256:0a37018282545ccc31faecbe138fda4d89e236af04d691cfb5af00cd60089345"},
-    {file = "pyaml-23.7.0.tar.gz", hash = "sha256:0c510bbb8938309400e0b1e47ac16fd90e56d652805a93417128786718f33546"},
+    {file = "pyaml-23.9.1-py3-none-any.whl", hash = "sha256:bb7daf311c59891671a5c816973cd15734e545b1a01514a39bce7d68a61d8c86"},
+    {file = "pyaml-23.9.1.tar.gz", hash = "sha256:4e2030f5fc0d3b5784a3a7853ba78b1ae8de943c6dba5507876550c5bd18f387"},
 ]
 
 [package.dependencies]
@@ -2135,4 +2172,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12.0"
-content-hash = "97f61a07565b275461a532f02413d24f029ed5885c790aa56a3315175b421bb3"
+content-hash = "75d1417a0e3c0bf3755fde3b9cd093acb95bb010c0056de5e665f30c6d857b18"
