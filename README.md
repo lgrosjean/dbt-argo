@@ -1,6 +1,13 @@
 # dbt-argo
 
-A simple Python package to parse dbt dependencies to create an Argo Workflow job
+![PyPI - Version](https://img.shields.io/pypi/v/dbt-argo?logo=pypi&color=blue&link=https%3A%2F%2Fpypi.org%2Fproject%2Fdbt-argo%2F)
+
+
+A simple Python package to parse dbt dependencies to create an Argo Workflow job. It can also submit Argo files directly to the server.
+
+## Motivations
+
+Simplify CI steps to create Argo workflow for dbt projects.
 
 ## Limitations
 
@@ -9,15 +16,26 @@ A simple Python package to parse dbt dependencies to create an Argo Workflow job
 
 ## Usage
 
+By default, it assumes the `dbt_project.yml` file is located at the root folder, if not the `DBT_PROJECT_DIR` can be defined to locate the project path.
+
 ```sh
-dbt-argo [PATH] \
-    --target-path [TARGET_PATH] \
-    --output_file [OUTPUT_FILE]
+Usage: dbt-argo [OPTIONS] COMMAND [ARGS]...
+
+  Test
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  create  Create a dbt Argo Workflow
+  cron    Manage cron workflow
+  submit  dbt-argo deploy {FILE
 ```
-## `.dbt-argo.yml` configuration file
 
-This file is a simplify Argo Workflow spec file. It only contains root configuration options and any reference to templates, steps or containers.
+## Inspirations
 
-## TODO
-
-- Créer un CLI qui permet de générer sans fichier de config (dbt-argo cronworkflow . --schedule ... --name ...--service_account ...)
+- [Hera](https://github.com/argoproj-labs/hera) for pydantic + argo
+- [couler](https://github.com/couler-proj/couler) for cluster submission
+- [dbt > 1.5](https://docs.getdbt.com/reference/programmatic-invocations) for easy manifest parsing directly in python scripts
+- [Argo CLI](https://argoproj.github.io/argo-workflows/walk-through/argo-cli/) for cli options
+- [kubectl](https://argoproj.github.io/argo-workflows/kubectl/) for create functiin definition
