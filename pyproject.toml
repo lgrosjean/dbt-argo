@@ -1,6 +1,10 @@
 [tool.poetry]
 name = "dbt-argo"
+<<<<<<< HEAD
 version = "0.1.0-rc"
+=======
+version = "0.2.0"
+>>>>>>> b231806 (update pyproject)
 description = "A dbt pipeline converter to Argo Workflows"
 authors = ["Léo Grosjean <leo.bigjin@gmail.com>"]
 readme = "README.md"
