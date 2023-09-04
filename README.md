@@ -18,7 +18,7 @@ Simplify CI steps to create Argo workflow for dbt projects.
 
 By default, it assumes the `dbt_project.yml` file is located at the root folder, if not the `DBT_PROJECT_DIR` can be defined to locate the project path.
 
-```sh
+```
 Usage: dbt-argo [OPTIONS] COMMAND [ARGS]...
 
   Test
@@ -30,14 +30,14 @@ Commands:
   cp      copy local folder to GCS Bucket
   create  Create a dbt Argo Workflow
   cron    Manage cron workflow
-  submit  dbt-argo deploy {FILE
+  submit  dbt-argo deploy {FILE}
 ```
 
 ## Inspirations
 
-- [Hera](https://github.com/argoproj-labs/hera) for pydantic + argo
-- [couler](https://github.com/couler-proj/couler) for cluster submission
+- [Hera](https://github.com/argoproj-labs/hera) for Argo Python CLI + pydantic validation objects
+- [couler](https://github.com/couler-proj/couler) for easy cluster submission (like `kubectl apply -f ...`)
 - [dbt > 1.5](https://docs.getdbt.com/reference/programmatic-invocations) for easy manifest parsing directly in python scripts
 - [Argo CLI](https://argoproj.github.io/argo-workflows/walk-through/argo-cli/) for cli options
-- [kubectl](https://argoproj.github.io/argo-workflows/kubectl/) for create functiin definition
-- [Cloudpathlib]([cloudpathlib](https://github.com/drivendataorg/cloudpathlib)) to deal with cloud file like `pathlib`
+- [kubectl](https://argoproj.github.io/argo-workflows/kubectl/) for simple CLI application
+- [cloudpathlib](https://github.com/drivendataorg/cloudpathlib) to deal with cloud file like `pathlib`
