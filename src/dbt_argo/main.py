@@ -1,4 +1,5 @@
 import yaml
+from couler.argo_submitter import ArgoSubmitter
 
 from dbt_argo.argo.base import WorkflowFactory
 from dbt_argo.dbt import DbtManifest
@@ -21,4 +22,9 @@ def main(config_path: str, manifest_path: str, output_path: str):
     dbt_workflow = base_workflow.set_workflow_spec(dbt_workflow_spec)
 
     with open(output_path, "w", encoding="utf8") as f:
-        yaml.dump(dbt_workflow.model_dump(exclude_none=True), f)
+        workflow_yaml = dbt_workflow.model_dump(exclude_none=True)
+        yaml.dump(workflow_yaml, f)
+
+    submitter = ArgoSubmitter(namespace="omni-leogrosjean")
+
+    submitter.submit(workflow_yaml)

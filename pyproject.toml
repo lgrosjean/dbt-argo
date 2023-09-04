@@ -1,23 +1,32 @@
 [tool.poetry]
 name = "dbt-argo"
-version = "0.1.0-rc"
+version = "0.2.0"
 description = "A dbt pipeline converter to Argo Workflows"
 authors = ["Léo Grosjean <leo.bigjin@gmail.com>"]
 readme = "README.md"
 packages = [{ include = "dbt_argo", from = "src" }]
 
 [tool.poetry.scripts]
-dbt-argo = "dbt_argo.cli:cli"
+dbt-argo = "dbt_argo.v2.cli:cli"
+
 
 [tool.poetry.dependencies]
-python = "^3.9"
-PyYAML = "^6.0.1"
-pydantic = "^2.1.1"
+python = ">=3.9,<3.12.0"
 click = "^8.1.6"
+couler = { git = "https://github.com/couler-proj/couler" }
+hera = "^5.6.0"
+croniter = "^1.4.1"
+
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
 pylint = "^2.17.5"
+
+[tool.poetry.group.gcp.dependencies]
+dbt-bigquery = "^1.5"
+cloudpathlib = { extras = ["gs"], version = "^0.15.1" }
 
 [tool.pylint]
 fail-under = 0.8
