@@ -43,7 +43,7 @@ def create_dbt_workflow(
     entrypoint = "pipeline"
 
     with Workflow(
-        generate_name=f"{name}-",
+        name=f"{name}",
         namespace=namespace,
         entrypoint=entrypoint,
         service_account_name=service_account_name,
@@ -134,7 +134,7 @@ def create_dbt_cronworkflow(
     entrypoint = "pipeline"
 
     with CronWorkflow(
-        generate_name=f"{name}-",
+        name=f"{name}",
         schedule=schedule,
         namespace=namespace,
         entrypoint=entrypoint,
