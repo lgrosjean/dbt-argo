@@ -5,10 +5,10 @@ import sys
 
 import click
 import yaml
-from couler.argo_submitter import ArgoSubmitter  # pylint: disable=import-error
 from dbt.cli.main import dbtRunner, dbtRunnerResult
 from dbt.contracts.graph.manifest import Manifest
 
+from .submitter import ArgoSubmitter  # pylint: disable=import-error
 from .utils import copy_dir_to_gcs
 from .workflows import create_dbt_cronworkflow, create_dbt_workflow
 
@@ -144,12 +144,13 @@ def create_cron(
 
 @cli.command(name="submit")
 @click.option("-f", "--filename")
+@click.option("-n", "--namespace", default="default")
 @click.option("--dry-run", is_flag=True)
-def submit_workflow(filename, dry_run):
+def submit_workflow(filename, namespace, dry_run):
     """dbt-argo deploy {FILE}"""
     click.echo(f" Deploying {filename}!")
 
-    submitter = ArgoSubmitter(namespace="omni-leogrosjean")
+    submitter = ArgoSubmitter(namespace=namespace)
 
     with open(filename, encoding="utf8") as file:
         workflow_yaml = yaml.safe_load(file)
