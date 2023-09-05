@@ -70,7 +70,7 @@ def create_workflow(
             click.echo(workflow.to_yaml())
 
         if submit:
-            submit_workflow(filepath, dry_run=False)
+            submit_workflow(filepath, namespace=namespace, dry_run=False)
 
 
 @cli.group(invoke_without_command=True)
@@ -139,7 +139,7 @@ def create_cron(
             click.echo(workflow.to_yaml())
 
         if submit:
-            submit_workflow(filepath, dry_run=False)
+            submit_workflow(filepath, namespace=namespace, dry_run=False)
 
 
 @cli.command(name="submit")
