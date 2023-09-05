@@ -83,10 +83,9 @@ def create_dbt_workflow(
                     "view",
                     "ephemeral",
                 ):
-                    # print(node.name)
                     tasks[node_name] = dbt_base(
                         name=clean_name(node.name),
-                        arguments={"command": command, "args": f"-s {node_name}"},
+                        arguments={"command": command, "args": f"-s {node.name}"},
                     )
 
             # 2. Create dependencies
@@ -94,6 +93,8 @@ def create_dbt_workflow(
                 if node.resource_type == "model":
                     task = tasks[node_name]
                     for node_parent_name in node.depends_on.nodes:  # type: ignore
+                        if not node_parent_name in manifest.nodes:
+                            continue
                         node_parent = manifest.nodes[node_parent_name]
                         if node_parent.config.materialized in (
                             "table",
@@ -180,7 +181,7 @@ def create_dbt_cronworkflow(
                     # print(node.name)
                     tasks[node_name] = dbt_base(
                         name=clean_name(node.name),
-                        arguments={"command": command, "args": f"-s {node_name}"},
+                        arguments={"command": command, "args": f"-s {node.name}"},
                     )
 
             # 2. Create dependencies
@@ -188,6 +189,8 @@ def create_dbt_cronworkflow(
                 if node.resource_type == "model":
                     task = tasks[node_name]
                     for node_parent_name in node.depends_on.nodes:  # type: ignore
+                        if not node_parent_name in manifest.nodes:  # remove sources
+                            continue
                         node_parent = manifest.nodes[node_parent_name]
                         if node_parent.config.materialized in (
                             "table",
