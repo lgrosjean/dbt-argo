@@ -1,15 +1,11 @@
 # Source: https://github.com/couler-proj/couler/blob/master/couler/argo_submitter.py
 import logging
-import os
 import re
-import tempfile
 
 import pyaml
 import yaml
 from kubernetes import client as k8s_client
 from kubernetes import config
-
-_SUBMITTER_IMPL_ENV_VAR_KEY = "SUBMITTER_IMPLEMENTATION"
 
 
 class WorkflowCRD(object):
@@ -48,45 +44,24 @@ class ArgoSubmitter:
         logging.basicConfig(level=logging.INFO)
         self.namespace = namespace
         logging.info("Argo submitter namespace: %s" % self.namespace)
-        self.go_impl = (
-            os.environ.get(_SUBMITTER_IMPL_ENV_VAR_KEY, _SubmitterImplTypes.PYTHON)
-            == _SubmitterImplTypes.GO
-        )
-        if self.go_impl:
-            from ctypes import c_char_p, cdll
 
-            from couler.core.proto_repr import get_default_proto_workflow
+        try:
+            config.load_kube_config(
+                config_file, context, client_configuration, persist_config
+            )
+            logging.info(
+                "Found local kubernetes config. " "Initialized with kube_config."
+            )
+            if client_configuration is not None:
+                logging.info("Setting default k8s client config as provided")
+                k8s_client.Configuration.set_default(client_configuration)
+        except Exception:
+            logging.info("Cannot find local k8s config. " "Trying in-cluster config.")
+            config.load_incluster_config()
+            logging.info("Initialized with in-cluster config.")
 
-            self.go_submitter = cdll.LoadLibrary("./submit.so")
-            self.go_submitter.Submit.argtypes = [c_char_p, c_char_p, c_char_p]
-            self.go_submitter.Submit.restype = c_char_p
-
-            with tempfile.NamedTemporaryFile(
-                dir="/tmp", delete=False, mode="wb"
-            ) as tmp_file:
-                self.proto_path = tmp_file.name
-                proto_wf = get_default_proto_workflow()
-                tmp_file.write(proto_wf.SerializeToString())
-        else:
-            try:
-                config.load_kube_config(
-                    config_file, context, client_configuration, persist_config
-                )
-                logging.info(
-                    "Found local kubernetes config. " "Initialized with kube_config."
-                )
-                if client_configuration is not None:
-                    logging.info("Setting default k8s client config as provided")
-                    k8s_client.Configuration.set_default(client_configuration)
-            except Exception:
-                logging.info(
-                    "Cannot find local k8s config. " "Trying in-cluster config."
-                )
-                config.load_incluster_config()
-                logging.info("Initialized with in-cluster config.")
-
-            self._custom_object_api_client = k8s_client.CustomObjectsApi()
-            self._core_api_client = k8s_client.CoreV1Api()
+        self._custom_object_api_client = k8s_client.CustomObjectsApi()
+        self._core_api_client = k8s_client.CoreV1Api()
 
     @staticmethod
     def check_name(name):
@@ -120,40 +95,32 @@ class ArgoSubmitter:
             if "name" in workflow_yaml["metadata"]
             else workflow_yaml["metadata"]["generateName"]
         )
-        if self.go_impl:
-            resp = self.go_submitter.Submit(
-                self.proto_path.encode("utf-8"),
-                self.namespace.encode("utf-8"),
-                wf_name.encode("utf-8"),
-            )
-            logging.info("Response: %s" % resp.decode("utf-8"))
-        else:
-            if secrets:
-                for secret in secrets:
-                    if secret.use_existing is False:
-                        if secret.artifact_secret is True:
-                            # For artifact secrets, check if the secret already exists
-                            if secret.name in [
-                                x.metadata.name
-                                for x in self.get_core_api_client()
-                                .list_namespaced_secret(namespace=self.namespace)
-                                .items
-                            ]:
-                                logging.info(
-                                    "Secret {} already exists in the {} namespace. Skipping creation.".format(
-                                        secret.name, self.namespace
-                                    )
+        if secrets:
+            for secret in secrets:
+                if secret.use_existing is False:
+                    if secret.artifact_secret is True:
+                        # For artifact secrets, check if the secret already exists
+                        if secret.name in [
+                            x.metadata.name
+                            for x in self.get_core_api_client()
+                            .list_namespaced_secret(namespace=self.namespace)
+                            .items
+                        ]:
+                            logging.info(
+                                "Secret {} already exists in the {} namespace. Skipping creation.".format(
+                                    secret.name, self.namespace
                                 )
-                            else:
-                                # Otherwise create the secret
-                                self._create_secret(secret.to_yaml())
+                            )
                         else:
-                            # For all other secrets
+                            # Otherwise create the secret
                             self._create_secret(secret.to_yaml())
+                    else:
+                        # For all other secrets
+                        self._create_secret(secret.to_yaml())
 
-            logging.info("Checking workflow name/generatedName %s" % wf_name)
-            self.check_name(wf_name)
-            return self._create_workflow(workflow_yaml)
+        logging.info("Checking workflow name/generatedName %s" % wf_name)
+        self.check_name(wf_name)
+        return self._create_workflow(workflow_yaml)
 
     def _create_workflow(self, workflow_yaml):
         yaml_str = pyaml.dump(workflow_yaml)
