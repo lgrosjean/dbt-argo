@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dbt-argo"
-version = "0.2.0"
+version = "0.2.0a4"
 description = "A dbt pipeline converter to Argo Workflows"
 authors = ["Léo Grosjean <leo.bigjin@gmail.com>"]
 readme = "README.md"
@@ -16,6 +16,9 @@ click = "^8.1.6"
 hera = "^5.6.0"
 croniter = "^1.4.1"
 kubernetes = "^27.2.0"
+pyaml = "^23.9.1"
+dbt-bigquery = "^1.5"
+cloudpathlib = { extras = ["gs"], version = "^0.15.1" }
 
 [tool.poetry.group.dev]
 optional = true
@@ -24,9 +27,6 @@ optional = true
 black = "^23.7.0"
 pylint = "^2.17.5"
 
-[tool.poetry.group.gcp.dependencies]
-dbt-bigquery = "^1.5"
-cloudpathlib = { extras = ["gs"], version = "^0.15.1" }
 
 [tool.pylint]
 fail-under = 0.8
